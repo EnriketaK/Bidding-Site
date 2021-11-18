@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2> Leave a comment </h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+{% if messages %}
+<div class="alert alert-warning" role="alert">
+{{ messages }}
+</div>
+{% endif %}
+
+<div class="container">
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+      <label class="label">{{ form.title.label }}</label>
+      <div class="input">{{ form.title }}</div>
+      <label class="label">{{ form.comment.label }}</label>
+      <div class="input">{{ form.comment }}</div>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+{% endblock %}

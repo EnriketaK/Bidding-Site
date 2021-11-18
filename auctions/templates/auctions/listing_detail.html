@@ -1,0 +1,111 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h2> Listing </h2>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.level_tag }}" role="alert">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class="container px-5 py-24 mx-auto flex flex-col">
+        <div class="lg:w-4/6 mx-auto">
+            <div class="rounded-lg h-64 overflow-hidden">
+                {% if object.image_thumbnail.url %}
+                <img alt="content" class="object-cover object-center h-full w-full"
+                    src="{{ object.image_thumbnail1.url }}">
+                {% else %}
+                <img alt="content" class="object-cover object-center h-full w-full" src="auctions/noimage.jpg">
+                {% endif %}
+            </div>
+            <div class="flex flex-col sm:flex-row mt-10">
+                <div class="sm:w-1/3 text-center sm:pr-8 sm:py-8">
+                    <div
+                        class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-400">
+                    </div>
+                    {% if object.category.name %}
+                    <h6 class="text-muted">Category: {{ object.category.name }}</h6>
+                    {% else %}
+                    <h6 class="text-muted">Category: None</h6>
+                    {% endif %}
+                    <h6 class="text-muted">Seller: {{ object.seller }}</h6>
+                    <h1 class="text-gray-900 text-3xl title-font font-medium mb-1">{{ object.title }}</h1>
+                    <p class="leading-relaxed">{{ object.content }}</p>
+                    <div class="title-font font-medium text-2xl text-gray-900"><strong>Current bid:
+                            {{ object.min_bid }}</strong></div>
+                    <div class="flex">
+                        {% if not object.ended %}
+                        <form method="POST" action="{% url 'listing-detail' object.id%}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="text" id="user_bid" name="user_bid" placeholder="Place your bid here...">
+                            <button
+                                class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Bid</button>
+                            <button
+                                class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                                <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    class="w-5 h-5" viewBox="0 0 24 24">
+                                </svg>
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'watch-item' object.id%}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <button
+                                class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                                {% if watched %} 
+                                Remove from watchlist
+                                {% else %}
+                                Add to watchlist
+                                {% endif %}
+                            </button>
+                            <button
+                                class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                                <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    class="w-5 h-5" viewBox="0 0 24 24">
+                                </svg>
+                            </button>
+                        </form>
+                        {% if closed %} 
+                        <form method="POST" action="{% url 'close-auction' object.id%}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <h4>
+                                <a href="{% url 'close-auction' object.id%}"> Close auction </a>
+                            </h4>
+                        </form>
+                        {% endif %}
+                        {% else %}
+                        <h4>Auction has ended!</h4>
+                        
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class="container px-5 py-24 mx-auto">
+      <div class="-my-8">
+        <div class="py-8 flex border-t-2 border-gray-200 flex-wrap md:flex-no-wrap">
+          <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
+            <span class="tracking-widest font-medium title-font text-gray-900">
+                <a href="{% url 'commenting' object.id%}"><h3>Leave a comment</h3></a>
+            </span>
+            {% if comments %}
+            {% for comment in comments %}
+            <span class="mt-1 text-gray-500 text-sm">{{ comment.date_posted}}</span>
+          </div>
+          <div class="md:flex-grow">
+            <h2 class="text-2xl font-medium text-gray-900 title-font mb-2">{{ comment.title }}</h2>
+            <p class="leading-relaxed">{{ comment.comment }}</p>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endblock %}
